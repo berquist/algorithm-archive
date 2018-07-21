@@ -2,11 +2,12 @@ dist: trusty
 sudo: false
 
 language: node_js
+node_js:
+  - "4"
 
-addons:
-  apt:
-    packages:
-      - nodejs
+cache:
+  directories:
+    - node_modules
 
 install:
   - npm install gitbook-cli -g
