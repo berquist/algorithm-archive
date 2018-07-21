@@ -1,0 +1,16 @@
+dist: trusty
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - nodejs
+
+install:
+  - npm install gitbook-cli -g
+
+before_script:
+  - mkdir -p "${TRAVIS_BUILD_DIR}"/build
+
+script:
+  - gitbook build . "${TRAVIS_BUILD_DIR}"/build
