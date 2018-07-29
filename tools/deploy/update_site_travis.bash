@@ -7,9 +7,9 @@ set -o errexit
 
 # Required environment variables:
 # - DOCS_BRANCH_NAME: name of the remote branch serving the book
-# - GH_REPO_NAME: name of the remote repo
+# - DOCS_REPO_NAME: name of the remote repo
+# - DOCS_REPO_OWNER: name of the remote repo's owner
 # - GH_TOKEN: [secret] Personal Access Token
-# - GH_USER: name of the remote repo's owner
 
 bold=$(tput bold)
 normal=$(tput sgr0)
@@ -17,21 +17,21 @@ normal=$(tput sgr0)
 if [ -z ${DOCS_BRANCH_NAME+x} ]; then
     echo "${bold}\$DOCS_BRANCH_NAME is not set!${normal}"
     exit 1
-elif [ -z ${GH_REPO_NAME+x} ]; then
-    echo "${bold}\$GH_REPO_NAME is not set!${normal}"
+elif [ -z ${DOCS_REPO_NAME+x} ]; then
+    echo "${bold}\$DOCS_REPO_NAME is not set!${normal}"
+    exit 1
+elif [ -z ${DOCS_REPO_OWNER+x} ]; then
+    echo "${bold}\$DOCS_REPO_OWNER is not set!${normal}"
     exit 1
 elif [ -z ${GH_TOKEN+x} ]; then
     echo "${bold}\$GH_TOKEN is not set!${normal}"
-    exit 1
-elif [ -z ${GH_USER+x} ]; then
-    echo "${bold}\$GH_USER is not set!${normal}"
     exit 1
 fi
 
 git config user.name "Travis CI User"
 git config user.email "travis@travis-ci.org"
 
-GH_REPO_REF="github.com/${GH_USER}/${GH_REPO_NAME}.git"
+GH_REPO_REF="github.com/${DOCS_REPO_OWNER}/${DOCS_REPO_NAME}.git"
 
 # Assume the book has already been built, and was moved to `build/`
 # inside the same directory as this script.
@@ -39,9 +39,10 @@ GH_REPO_REF="github.com/${GH_USER}/${GH_REPO_NAME}.git"
 if [ -d build ]; then
     echo "${bold}Cloning the website repo...${normal}"
     git clone -b $DOCS_BRANCH_NAME https://git@${GH_REPO_REF}
-    rm -rf ./"${GH_REPO_NAME}"/*
-    cp -a ./build/* ./"${GH_REPO_NAME}"
-    pushd ./"${GH_REPO_NAME}"
+    rm -rf ./"${DOCS_REPO_NAME}"/*
+    cp -a ./build/* ./"${DOCS_REPO_NAME}"
+    pushd ./"${DOCS_REPO_NAME}"
+    # echo "www.algorithm-archive.org" > CNAME
     echo "${bold}Adding changes...${normal}"
     git add --all
     echo "${bold}Committing...${normal}"
@@ -50,7 +51,7 @@ if [ -d build ]; then
     git commit \
         -m "Deploy book to GitHub Pages Travis build: ${TRAVIS_BUILD_NUMBER}" \
         -m "Commit: ${TRAVIS_COMMIT}" || ret=$?
-    git push --force "https://${GH_TOKEN}@${GH_REPO_REF}" > /dev/null 2>&1
+    git push "https://${GH_TOKEN}@${GH_REPO_REF}" > /dev/null 2>&1
     popd
 else
     echo "" >&2
