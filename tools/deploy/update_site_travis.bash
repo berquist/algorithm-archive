@@ -4,7 +4,6 @@
 # products.
 
 set -o errexit
-set -v
 
 # Required environment variables:
 # - DOCS_BRANCH_NAME: name of the remote branch serving the book

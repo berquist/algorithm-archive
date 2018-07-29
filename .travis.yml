@@ -20,6 +20,8 @@ script:
   - gitbook build . "${TRAVIS_BUILD_DIR}"/build
   - env
   - |
-    if [[ "${TRAVIS_BRANCH}" == master ]]; then
+    if [[ "${TRAVIS_BRANCH}" == master && "${TRAVIS_PULL_REQUEST}" == false ]]; then
+        # Commits to master that are not pull requests, that is,
+        # actual merges, should deploy the book to the site.
         bash "${TRAVIS_BUILD_DIR}"/tools/deploy/update_site_travis.bash
     fi
