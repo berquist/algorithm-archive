@@ -1,0 +1,8 @@
+[book]
+title = "Arcane Algorithm Archive"
+authors = ["James Schloss", "The Algorithm Archivists"]
+description = ""
+
+[build]
+build-dir = "build"
+create-missing = false
