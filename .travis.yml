@@ -10,6 +10,8 @@ before_script:
 
 script:
   - npm run build
+  # Make sure the book built.
+  - [[ -f "${BOOK_BUILD_DIR}"/index.html ]]
 
 after_success:
     - |
